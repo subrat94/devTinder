@@ -6,17 +6,17 @@ const User=require("./models/user")
 
 // const { adminAuth, userAuth }=require("./middleware/Auth")
 const PORT=3000
+//middle ware for reading json
+app.use(express.json())
 
 //create api
 app.post("/signup",async (req,res)=>{
+    // console.log(req.body);
+    
 
-    //create a new instance of object usning new key word
-    const user=new  User({
-        firstName:"xoxo",
-        lastName:"mahi",
-        email:"xoxo@gmail.com",
-        password:"subrat123"
-    })
+    
+
+    const user=new User(req.body)
     try{
     await user.save()
     res.status(201).json({
