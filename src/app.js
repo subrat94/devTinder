@@ -1,7 +1,9 @@
 const express=require("express")
 const app=express()
 const connectDB=require("./config/database")
+const {validateSignUp}=require("./utils/validation")
 const User=require("./models/user")
+const bcrypt=require("bcrypt")
 
 
 // const { adminAuth, userAuth }=require("./middleware/Auth")
@@ -12,16 +14,27 @@ app.use(express.json())
 //create api (create data in database)
 app.post("/signup",async (req,res)=>{
     // console.log(req.body);
-
-
-    const user=new User(req.body)
+    //for every register api there some step you have to follow every time
     try{
+    //validation of data
+        validateSignUp(req)
+        const{firstName,lastName,email,password}=req.body
+    // encrept the password
+    const passwordHash=await bcrypt.hash(password,10)
+    console.log("hasing passwod",passwordHash);
+    
+
+
+    const user=new User({
+        firstName,lastName,email,password:passwordHash
+    })
+
     await user.save()
     res.status(201).json({
         message: "User created successfully",
         // user
     });
-    console.log(user);
+    
     
 }catch(err){
     res.status(400).json({
@@ -31,6 +44,28 @@ app.post("/signup",async (req,res)=>{
 }
 
      
+})
+
+//login api
+app.post("/login",async(req,res)=>{
+    try{
+    const {email,password}=req.body
+    const user=await User.findOne({email:email})
+    if(!user){
+        throw new Error("Invalid credential");
+    }
+    const isPasswordMatch=await bcrypt.compare(password,user.password)
+    if(isPasswordMatch){
+        res.status(200).send("successfully loged in")
+    }
+    else{
+        res.status(400).send("password is not correct")
+    }
+}
+catch(err){
+    res.status(400).send("error " +err.message)
+}
+
 })
 
 //find a user by their email
