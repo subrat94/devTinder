@@ -9,7 +9,7 @@ const PORT=3000
 //middle ware for reading json
 app.use(express.json())
 
-//create api
+//create api (create data in database)
 app.post("/signup",async (req,res)=>{
     // console.log(req.body);
 
@@ -19,16 +19,82 @@ app.post("/signup",async (req,res)=>{
     await user.save()
     res.status(201).json({
         message: "User created successfully",
-        user
+        // user
     });
+    console.log(user);
+    
 }catch(err){
     res.status(400).json({
-        message:"bad request"
+        message:err.message
     })
 
 }
 
      
+})
+
+//find a user by their email
+
+app.get("/userByMail",async (req,res)=>{
+    const userMail = req.body.email
+    try{
+        const user = await User.find({ email: userMail })
+        if(user.length===0){
+            res.status(400).send("no record found")
+        }else{
+            res.status(200).send(user)
+
+        }
+        
+    }
+    catch(err){
+        res.status(400).json({message:"something went wrong"})
+    }
+
+})
+//get all data from database ()
+app.get("/feed",async(req,res)=>{
+    try{
+        const users= await User.find({})
+        res.status(200).send(users)
+
+    }
+    catch(err){
+        res.status(401).send("there is no record")
+    }
+
+})
+
+//delete a user by id
+app.delete("/deleteById",async (req,res)=>{
+    const userId=req.body.userId
+    try{
+        const user = await User.findByIdAndDelete(userId)
+        res.status(200).send("user deleted successfully")
+
+    }catch(err){
+        res.status(400).send("something went wrong")
+    }
+})
+
+//api for update data by id
+app.patch("/updateUser/:userId",async (req,res)=>{
+    const userId=req.params?.userId
+    const data=req.body
+
+    try{
+        const ALLOW_UPDATE = ["userId","password", "age", "photourl", "about","skills"]
+        const isUpdateAllowed = Object.keys(data).every((k) => ALLOW_UPDATE.includes(k))
+        if (!isUpdateAllowed) {
+            throw new Error("update not allowed")
+        }
+        await User.findByIdAndUpdate({ _id: userId },data)
+        res.status(200).send("successfully update")
+
+    }
+    catch(err){
+        res.status(400).send("something went wrong")
+    }
 })
 
 connectDB().then(() => {
