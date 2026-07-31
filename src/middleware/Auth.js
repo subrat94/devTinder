@@ -1,5 +1,7 @@
  const jwt=require("jsonwebtoken") 
  const  User=require("../models/user")
+//  app.use(express.json());
+//  app.use(cookieparser());
 // const adminAuth = (req, res, next) => {
 //     console.log("checking auth middleware");
 
