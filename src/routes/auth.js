@@ -1,5 +1,5 @@
-const express=require("express")
-const authRouter=express.Router()
+const express = require("express")
+const authRouter = express.Router()
 const { validateSignUp } = require("../utils/validation");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -61,6 +61,14 @@ authRouter.post("/login", async (req, res) => {
         res.status(400).send("error is " + err.message);
     }
 });
+
+//logout api
+authRouter.post("/logout", async (req, res) => {
+    res.cookie("token", null), {
+        expires: new Date(Date.now())
+    }
+    res.send("logout successfully!!")
+})
 authRouter.patch("/updateUser/:userId", async (req, res) => {
     const userId = req.params?.userId;
     const data = req.body;
