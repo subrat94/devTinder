@@ -39,8 +39,11 @@ const userAuth= async(req,res,next)=>{
     const cookies=req.cookies
     const {token}=cookies;
     if(!token){
-        res.send("token is not valid")
+        // res.send("token is not valid")
+        return res.status(401).send("please Log in !")
     }
+
+    //check if token is blacklisted or not
 
     //validate the token 
     const decodeData = await jwt.verify(token, "MAHI@94")

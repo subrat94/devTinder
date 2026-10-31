@@ -2,8 +2,14 @@ const express = require("express");
 const app = express();
 const connectDB = require("./config/database");
 const cookieparser = require("cookie-parser");
+const cors = require("cors")
 
 const { Error } = require("mongoose");
+
+app.use(cors({
+    origin:"http://localhost:5173",
+    credentials:true
+}))
 app.use(express.json());
 app.use(cookieparser());
 const jwt = require("jsonwebtoken");
@@ -79,7 +85,7 @@ connectDB()
         });
     })
     .catch((err) => {
-        console.error("db failed");
+        console.error("db failed", err.message);
     });
 
 //using middleware in this route

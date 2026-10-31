@@ -10,9 +10,11 @@ profileRouter.get("/profile/view", userAuth, async (req, res) => {
     try {
         const user = req.user
         if (!user) {
-            throw new Error("user not found")
+            return res.status(404).json({
+                message: "User not found"
+            });
         }
-        res.send(user)
+        return res.status(200).json(user);
 
         // console.log("jwt token is", isTokenValid);
 
@@ -20,7 +22,10 @@ profileRouter.get("/profile/view", userAuth, async (req, res) => {
         // console.log(cookies);
     }
     catch (err) {
-        res.send("ERROR:", err.message)
+        // res.send("ERROR:", err.message)
+        return res.status(500).json({
+            message: err.message
+        });
     }
 });
 
